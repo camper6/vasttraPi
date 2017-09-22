@@ -19,7 +19,7 @@ headerFrame.configure(background='black')
 headerFrame.place(x=0, y=20)
 
 # Label inside heade frame
-headerLbl = tk.Label(headerFrame, text="                                      Departures                                 ", font=("Helvetica bold", headerFontSize), bg="black", fg="white")
+headerLbl = tk.Label(headerFrame, text="{}Departures{}".format(" "*36, " "*35), font=("Helvetica bold", headerFontSize), bg="black", fg="white")
 # Place label on grid layout, row 0 and do not expand
 headerLbl.grid(row=0)
 # Center column 0 inside header frame
@@ -31,9 +31,9 @@ subHeadersFrame.configure(background='black')
 #subHeadersFrame.grid(row=1, sticky=tk.E + tk.W)
 subHeadersFrame.place(x=0, y=70)
 
-busNoLbl = tk.Label(subHeadersFrame, text="      Bus Number          ", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
-busDestLbl = tk.Label(subHeadersFrame, text="         Destination      ", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
-minsLeftLbl = tk.Label(subHeadersFrame, text="       Minutes Left        ", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
+busNoLbl = tk.Label(subHeadersFrame, text="{}Bus Number{}".format(" "*5, " "*15), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
+busDestLbl = tk.Label(subHeadersFrame, text="{}Destination{}".format(" "*5," "*5), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
+minsLeftLbl = tk.Label(subHeadersFrame, text="{}Minutes Left{}".format(" "*10," "*5), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
 
 busNoLbl.grid(row=0, column=0)
 busDestLbl.grid(row=0, column=100)
