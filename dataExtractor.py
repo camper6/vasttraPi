@@ -35,7 +35,8 @@ class BusRoutes(object):
     def __init__(self, busroutes):
         self.busroutes = busroutes
 
-    def extractBusRoute(self, routeNo):
+    # Gets a specific bus route by its route number
+    def getBusRoute(self, routeNo):
         for route in self.busroutes:
             if str(routeNo) == route.routeNo:
                 return route
