@@ -58,27 +58,30 @@ class BusRoutes(object):
         for route in self.busroutes:
             routesStr += "{}\n".format(route)
         return routesStr
-        
+
+# Holds no properties, ONLY FOR READING
 class ReadXMLBusRoutes(object):
 
-    # Initializes the class
-    def __init__(self, busPlatform):
-        self.setBusPlatform(busPlatform)
+    # Gets the BusRoutes
+    def getBusRoutes(self, busPlatform):
+        url = self.getBusPlatformURL(busPlatform)
+        dom = self.getBusPlatformDOM(url)
+        return self.extractBusRoutes(dom)
 
-    # Sets the BusPlatform
-    def setBusPlatform(self, busPlatform):
-        self.url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
-        self.extractDatas()
+    # Gets the BusPlatform URL
+    def getBusPlatformURL(self, busPlatform):
+        url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
+        return url
 
-    # Extracts the data from the class's url and parses it into a document
-    def extractDatas(self):
-        opendata = urllib.request.urlopen(self.url)
+    # Gets the extracted the data from the class's url and parses it into a document
+    def getBusPlatformDOM(self, url):
+        opendata = urllib.request.urlopen(url)
         dom = minidom.parse(opendata)
-        self.dom = dom
+        return dom
 
     # Extracts the values in the document and returns a BusRoutes class 
-    def extractBusRoutes(self):
-        routes = self.dom.getElementsByTagName('Route')
+    def extractBusRoutes(self, dom):
+        routes = dom.getElementsByTagName('Route')
         busRoutes = []
         for route in routes:
             routeNo = route.getAttribute('RouteNo')
@@ -97,11 +100,12 @@ class ReadXMLBusRoutes(object):
             busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips)) # adds BusRoute into the list busRoutes
         return BusRoutes(busRoutes) # returns the class BusRoutes holding the list
 
-
 busPlatform = 23411
-    
-busroutes = ReadXMLBusRoutes(busPlatform).extractBusRoutes()
+read = ReadXMLBusRoutes()
+read.
+
+busroutes = read.getBusRoutes(busPlatform)
+print(busroutes)
 
 route17 = busroutes.getBusRoute(17)
-#print(busroutes)
-print(route17)
+#print(route17)
