@@ -2,12 +2,16 @@ import os
 from xml.dom import minidom
 import urllib.request
 
+# The class for holding the attributes in the Trip element
 class Trip(object):
+    
+    # Initializes the class
     def __init__(self, eta, tripID, wheelchairAccess):
         self.eta = int(eta)
         self.tripID = tripID
         self.wheelchairAccess = wheelchairAccess
 
+    # A method call when trying to print the attributes in the class
     def __str__(self):
         eta = "Estimate Time of Arrival: {}".format(self.eta)
         tripID = "TripID: {}".format(self.tripID)
@@ -15,13 +19,17 @@ class Trip(object):
         tripStr = "{} {} {}".format(eta, tripID, wheelchairAccess)
         return tripStr
 
+# The class holding the attributes and elements in the Route element
 class BusRoute(object):
+
+    # Initializes the class
     def __init__(self, routeNo, routeName, destination, trips):
         self.routeNo = routeNo
         self.routeName = routeName
         self.destination = destination
-        self.trips = trips
+        self.trips = trips # Holds a list of Trip
 
+    # A method call when trying to print the attributes in the class
     def __str__(self):
         num = "Route Number: {}".format(self.routeNo)
         name = "Route Name: {}".format(self.routeName)
@@ -31,9 +39,12 @@ class BusRoute(object):
             tripStr += "{}\n".format(trip)
         return "{} {} {}:\n{}".format(num, name, destination, tripStr)
 
+# The class holding the other classes as a property
 class BusRoutes(object):
+
+    # Initializes the class
     def __init__(self, busroutes):
-        self.busroutes = busroutes
+        self.busroutes = busroutes # Holds a list of BusRoute
 
     # Gets a specific bus route by its route number
     def getBusRoute(self, routeNo):
@@ -41,6 +52,7 @@ class BusRoutes(object):
             if str(routeNo) == route.routeNo:
                 return route
 
+    # A method call when trying to print the attributes in the class
     def __str__(self):
         routesStr = ""
         for route in self.busroutes:
@@ -48,24 +60,26 @@ class BusRoutes(object):
         return routesStr
         
 class ReadXMLBusRoutes(object):
-    
+
+    # Initializes the class
     def __init__(self, busPlatform):
         self.url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
         self.dom = self.extractDatas()
-        
+
+    # Extracts the data from the url and parses it into a document
     def extractDatas(self):
         opendata = urllib.request.urlopen(self.url)
         dom = minidom.parse(opendata)
         return dom
 
-    #reading bus route function and it accepts a string. 
+    # Extracts the values in the document and returns a BusRoutes class 
     def extractBusRoutes(self):
         routes = self.dom.getElementsByTagName('Route')
         busRoutes = []
         for route in routes:
             routeNo = route.getAttribute('RouteNo')
             routeName = route.getAttribute('Name')
-            listofTrips = []
+            listofTrips = [] #clears the list of trips
             for destination in route.getElementsByTagName('Destination'):
                 destinationName = destination.getAttribute('Name')
                 for trip in destination.getElementsByTagName('Trip'):
@@ -84,4 +98,5 @@ busPlatform = 23411
     
 busroutes = ReadXMLBusRoutes(busPlatform).extractBusRoutes()
 route17 = busroutes.getBusRoute(17)
-print(busroutes)
+#print(busroutes)
+print(route17)
