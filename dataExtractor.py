@@ -4,7 +4,7 @@ import urllib.request
 
 class Trip(object):
     def __init__(self, eta, tripID, wheelchairAccess):
-        self.eta = eta
+        self.eta = int(eta)
         self.tripID = tripID
         self.wheelchairAccess = wheelchairAccess
 
@@ -35,7 +35,8 @@ class BusRoutes(object):
     def __init__(self, busroutes):
         self.busroutes = busroutes
 
-    def extractBusRoute(self, routeNo):
+    # Gets a specific bus route by its route number
+    def getBusRoute(self, routeNo):
         for route in self.busroutes:
             if str(routeNo) == route.routeNo:
                 return route
@@ -82,5 +83,5 @@ class ReadXMLBusRoutes(object):
 busPlatform = 23411
     
 busroutes = ReadXMLBusRoutes(busPlatform).extractBusRoutes()
-route17 = busroutes.extractBusRoute(17)
+route17 = busroutes.getBusRoute(17)
 print(busroutes)
