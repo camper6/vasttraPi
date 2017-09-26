@@ -63,14 +63,18 @@ class ReadXMLBusRoutes(object):
 
     # Initializes the class
     def __init__(self, busPlatform):
-        self.url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
-        self.dom = self.extractDatas()
+        self.setBusPlatform(busPlatform)
 
-    # Extracts the data from the url and parses it into a document
+    # Sets the BusPlatform
+    def setBusPlatform(self, busPlatform):
+        self.url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
+        self.extractDatas()
+
+    # Extracts the data from the class's url and parses it into a document
     def extractDatas(self):
         opendata = urllib.request.urlopen(self.url)
         dom = minidom.parse(opendata)
-        return dom
+        self.dom = dom
 
     # Extracts the values in the document and returns a BusRoutes class 
     def extractBusRoutes(self):
@@ -90,13 +94,14 @@ class ReadXMLBusRoutes(object):
                     else:
                         wheelchairAccess = False
                     listofTrips.append(Trip(eta, tripID, wheelchairAccess))
-            busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
-        return BusRoutes(busRoutes)
+            busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips)) # adds BusRoute into the list busRoutes
+        return BusRoutes(busRoutes) # returns the class BusRoutes holding the list
 
 
 busPlatform = 23411
     
 busroutes = ReadXMLBusRoutes(busPlatform).extractBusRoutes()
+
 route17 = busroutes.getBusRoute(17)
 #print(busroutes)
 print(route17)
