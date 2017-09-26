@@ -91,11 +91,11 @@ class ReadXMLBusRoutes(object):
             
             listofTrips = [] # reinitialize and clears the list of Trip
             
-            # get the Destination elements and its attribute name
+            # gets the Destination elements and its attribute name
             for destination in route.getElementsByTagName('Destination'):
                 destinationName = destination.getAttribute('Name')
                 
-                # get the Trip elements and its attributes
+                # gets the Trip elements and its attributes
                 for trip in destination.getElementsByTagName('Trip'):
                     eta = trip.getAttribute('ETA')
                     tripID = trip.getAttribute('TripID')
@@ -108,8 +108,8 @@ class ReadXMLBusRoutes(object):
                     # adds Trip into the list listofTrips
                     listofTrips.append(Trip(eta, tripID, wheelchairAccess))
 
-            # adds BusRoute into the list busRoutes
+            # adds an instance of BusRoute into the list busRoutes
             busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
 
-        # returns the class BusRoutes holding the list
+        # returns an instance of the class BusRoutes holding the list
         return BusRoutes(busRoutes)
