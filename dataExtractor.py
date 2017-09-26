@@ -59,10 +59,10 @@ class BusRoutes(object):
             routesStr += "{}\n".format(route)
         return routesStr
 
-# Holds no properties, ONLY FOR READING
+# Holds no properties, ONLY FOR READING AND EXTRACTING
 class ReadXMLBusRoutes(object):
 
-    # Gets the BusRoutes
+    # Gets the BusRoutes, this method does everything
     def getBusRoutes(self, busPlatform):
         url = self.getBusPlatformURL(busPlatform)
         dom = self.getBusPlatformDOM(url)
@@ -79,33 +79,37 @@ class ReadXMLBusRoutes(object):
         dom = minidom.parse(opendata)
         return dom
 
-    # Extracts the values in the document and returns a BusRoutes class 
+    # Extracts the values in the document and returns a BusRoutes instance 
     def extractBusRoutes(self, dom):
-        routes = dom.getElementsByTagName('Route')
         busRoutes = []
+        
+        # gets the Routes elements and its attributes
+        routes = dom.getElementsByTagName('Route')
         for route in routes:
             routeNo = route.getAttribute('RouteNo')
             routeName = route.getAttribute('Name')
-            listofTrips = [] #clears the list of trips
+            
+            listofTrips = [] # reinitialize and clears the list of Trip
+            
+            # get the Destination elements and its attribute name
             for destination in route.getElementsByTagName('Destination'):
                 destinationName = destination.getAttribute('Name')
+                
+                # get the Trip elements and its attributes
                 for trip in destination.getElementsByTagName('Trip'):
                     eta = trip.getAttribute('ETA')
                     tripID = trip.getAttribute('TripID')
+                    # checks if it has wheelchair access
                     if trip.hasAttribute('WheelchairAccess'):
                         wheelchairAccess = trip.getAttribute('WheelchairAccess') == 'true'
                     else:
                         wheelchairAccess = False
+
+                    # adds Trip into the list listofTrips
                     listofTrips.append(Trip(eta, tripID, wheelchairAccess))
-            busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips)) # adds BusRoute into the list busRoutes
-        return BusRoutes(busRoutes) # returns the class BusRoutes holding the list
 
-busPlatform = 23411
-read = ReadXMLBusRoutes()
-read.
+            # adds BusRoute into the list busRoutes
+            busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
 
-busroutes = read.getBusRoutes(busPlatform)
-print(busroutes)
-
-route17 = busroutes.getBusRoute(17)
-#print(route17)
+        # returns the class BusRoutes holding the list
+        return BusRoutes(busRoutes)
