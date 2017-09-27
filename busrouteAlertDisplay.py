@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from busrouteExtractor import *
 from datetime import datetime
 import time
