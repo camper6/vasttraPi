@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from busrouteExtractor import *
@@ -7,7 +7,6 @@ import time
 import tkinter as tk
 import getpass
 import threading
-import os
 
 read = ReadXMLBusRoutes()
 busPlatform23411 = 23411
