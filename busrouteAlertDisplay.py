@@ -7,7 +7,7 @@ import threading
 import os
 
 read = ReadXMLBusRoutes()
-busPlatform = 23411
+busPlatform23411 = 23411
 
 mainThread = threading.current_thread()
 
@@ -26,8 +26,9 @@ def disableScreenblanking():
 
 # Get the next trips as a list of busline numbers and minutes to leave for the next two trips
 def getNextTrips():
+
     nextTrips = []
-    busroutes = read.getBusRoutes(busPlatform)
+    busroutes = read.getBusRoutes(busPlatform23411)
     for route in busroutes.routes:
         for trip in route.trips:
             nextTrips.append((route.routeNo, route.destination, trip.eta))
@@ -52,7 +53,7 @@ class GUI:
         headerFrame.grid(row=0, sticky=tk.E + tk.W)
 
         # Label inside heade frame
-        headerLbl = tk.Label(headerFrame, text="Departures at Bus Platform: {}".format(busPlatform), font=("Helvetica bold", headerFontSize), bg="black", fg="white")
+        headerLbl = tk.Label(headerFrame, text="Departures", font=("Helvetica bold", headerFontSize), bg="black", fg="white")
         # Place label on grid layout, row 0 and do not expand
         headerLbl.grid(row=0)
         # Center column 0 inside header frame
