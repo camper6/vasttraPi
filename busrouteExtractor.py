@@ -4,7 +4,7 @@ import urllib.request
 
 # The class for holding the attributes in the Trip element
 class Trip(object):
-    
+
     # Initializes the class
     def __init__(self, eta, tripID, wheelchairAccess):
         self.eta = int(eta)
@@ -44,18 +44,18 @@ class BusRoutes(object):
 
     # Initializes the class
     def __init__(self, busroutes):
-        self.busroutes = busroutes # Holds a list of BusRoute
+        self.routes = busroutes # Holds a list of BusRoute
 
     # Gets a specific bus route by its route number
     def getBusRoute(self, routeNo):
-        for route in self.busroutes:
+        for route in self.routes:
             if str(routeNo) == route.routeNo:
                 return route
 
     # A method call when trying to print the attributes in the class
     def __str__(self):
         routesStr = ""
-        for route in self.busroutes:
+        for route in self.routes:
             routesStr += "{}\n".format(route)
         return routesStr
 
@@ -79,22 +79,22 @@ class ReadXMLBusRoutes(object):
         dom = minidom.parse(opendata)
         return dom
 
-    # Extracts the values in the document and returns a BusRoutes instance 
+    # Extracts the values in the document and returns a BusRoutes instance
     def extractBusRoutes(self, dom):
         busRoutes = []
-        
+
         # gets the Routes elements and its attributes
         routes = dom.getElementsByTagName('Route')
         for route in routes:
             routeNo = route.getAttribute('RouteNo')
             routeName = route.getAttribute('Name')
-            
+
             listofTrips = [] # reinitialize and clears the list of Trip
-            
+
             # gets the Destination elements and its attribute name
             for destination in route.getElementsByTagName('Destination'):
                 destinationName = destination.getAttribute('Name')
-                
+
                 # gets the Trip elements and its attributes
                 for trip in destination.getElementsByTagName('Trip'):
                     eta = trip.getAttribute('ETA')
@@ -105,7 +105,7 @@ class ReadXMLBusRoutes(object):
                     else:
                         wheelchairAccess = False
 
-                    # adds Trip into the list listofTrips
+                    # adds an instace of Trip into the list listofTrips
                     listofTrips.append(Trip(eta, tripID, wheelchairAccess))
 
             # adds an instance of BusRoute into the list busRoutes
