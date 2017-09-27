@@ -3,9 +3,13 @@ from datetime import datetime
 import time
 import tkinter as tk
 import getpass
+import threading
+import os
 
 read = ReadXMLBusRoutes()
 busPlatform = 23411
+
+mainThread = threading.current_thread()
 
 onPi = getpass.getuser() == "pi"
 sideColumnMinSize = 100
@@ -15,47 +19,13 @@ headerFontSize = 25
 subHeaderFontSize = 20
 
 maxFutureDepartureTime = 120  # The maximum amount of time (in minutes) left for a departure that is displayed
+guiRefreshRate = 15  # How often the gui checks for new departures (in seconds)
+
+def disableScreenblanking():
+    os.system("export DISPLAY=:0.0 && xset s off && xset s noblank && xset -dpms")
 
 # Get the next trips as a list of busline numbers and minutes to leave for the next two trips
 def getNextTrips():
-    """
-    # Get the current time and date from an NTP server as the host might not have an RTC
-    (currentDate, currentTime) = getNTPTime()
-    trips = defaultdict(list)  # A dictionary of lists, holding a list of departures for each bus
-    for stationName, stationID in stations.items():
-        # Get the departures for each station we are interested in
-        try:
-            departures = vasttrafik.get_departures(stationID, date=currentDate, time=currentTime)
-        except Exception as e:
-            print ("Connection failure for station %s" % stationName)
-            departures = []  # If something went wrong, empty the departures list so we don't try to iterate through them
-        for departure in departures:
-            if departure['track'] < 'C':  # We only care for buses going towards the center for now
-                try:
-                    # Sometimes rtTime is not returned, so fall back to normal time instead
-                    departureTime = departure['rtTime'] if 'rtTime' in departure else departure['time']
-                    trips[(departure['sname'], departure['direction'])].append(departureTime)
-                    #print ("Bus %s leaves towards %s at %s" % (departure['sname'], departure['direction'], departure['rtTime']))
-                except Exception as e:
-                    print ("Error while parsing server response")
-    #print (sorted(trips.items()))
-    nextTrips = []
-    for (busLine, destination), departureTimes in trips.items():
-            remainingDepartures = 2  # The number of departures that we care to show
-            for departureTime in departureTimes:
-                remainingDepartures -= 1
-                if remainingDepartures < 0:
-                    break
-                minutesToLeave = ((datetime.strptime(departureTime, "%H:%M") - datetime.strptime(currentTime, "%H:%M")).total_seconds() / 60)
-                # If a bus leaves the next day, the above result will be a negative number, therefore we need to completement it
-                # with the amount of minutes in a day (1440)
-                if minutesToLeave < 0:  # meaning that the next departure time is on the next day
-                    MINUTES_IN_DAY = 1440
-                    minutesToLeave += MINUTES_IN_DAY
-                #print ("Bus %s, leaves in %d" % (busLine, minutesToLeave))
-                nextTrips.append((busLine, destination, minutesToLeave))
-    """
-
     nextTrips = []
     busroutes = read.getBusRoutes(busPlatform)
     for route in busroutes.routes:
@@ -82,7 +52,7 @@ class GUI:
         headerFrame.grid(row=0, sticky=tk.E + tk.W)
 
         # Label inside heade frame
-        headerLbl = tk.Label(headerFrame, text="Departures", font=("Helvetica bold", headerFontSize), bg="black", fg="white")
+        headerLbl = tk.Label(headerFrame, text="Departures at Bus Platform: {}".format(busPlatform), font=("Helvetica bold", headerFontSize), bg="black", fg="white")
         # Place label on grid layout, row 0 and do not expand
         headerLbl.grid(row=0)
         # Center column 0 inside header frame
@@ -166,8 +136,8 @@ def updateGui(gui):
         gui.resetDepartures()  # Remove any already existing departures
         gui.populateTable(nextTrips)
         gui.currentlyDisplayedDepartures = nextTrips
-    #if mainThread.is_alive():
-    #    threading.Timer(guiRefreshRate, updateGui, [gui]).start()
+    if mainThread.is_alive():
+        threading.Timer(guiRefreshRate, updateGui, [gui]).start()
 
 
 def main():
