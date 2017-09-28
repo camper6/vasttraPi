@@ -36,11 +36,13 @@ def getNextTrips():
     for busPlatform in busPlatformsNum:
         platformNum = busPlatform['BUS_PLATFORM']
         busLine = busPlatform['BUS_LINE']
-        route = BusPlatform(platformNum).getBusRoute(busLine)
-        #print("{} {}".format(platformNum, busLine))
-        for trip in route.trips:
-            nextTrips.append((platformNum, route.routeNo, route.destination, trip.eta))
-
+        try:
+            route = BusPlatform(platformNum).getBusRoute(busLine)
+            #print("{} {}".format(platformNum, busLine))
+            for trip in route.trips:
+                nextTrips.append((platformNum, route.routeNo, route.destination, trip.eta))
+        except Exception as e:
+            print("Failed to get bus route")
     return nextTrips
 
 class GUI:
