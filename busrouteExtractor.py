@@ -40,11 +40,12 @@ class BusRoute(object):
         return "{} {} {}:\n{}".format(num, name, destination, tripStr)
 
 # The class holding the other classes as a property
-class BusRoutes(object):
+class BusPlatform(object):
 
     # Initializes the class
-    def __init__(self, busroutes):
-        self.routes = busroutes # Holds a list of BusRoute
+    def __init__(self, busPlatform):
+        self.busPlatform = busPlatform
+        self.routes = ReadXMLBusRoutes().getBusRoutes(busPlatform) # Holds a list of BusRoute
 
     # Gets a specific bus route by its route number
     def getBusRoute(self, routeNo):
@@ -112,4 +113,4 @@ class ReadXMLBusRoutes(object):
             busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
 
         # returns an instance of the class BusRoutes holding the list
-        return BusRoutes(busRoutes)
+        return busRoutes

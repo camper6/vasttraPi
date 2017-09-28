@@ -8,8 +8,11 @@ import tkinter as tk
 import getpass
 import threading
 
-read = ReadXMLBusRoutes()
-busPlatform23411 = 23411
+busPlatform23411 = { 'BUS_PLATFORM' : 23411, 'BUS_LINE' : 17 }
+busPlatform23337 = { 'BUS_PLATFORM' : 23337, 'BUS_LINE' : 'B' }
+busPlatform32974 = { 'BUS_PLATFORM' : 32974, 'BUS_LINE' : 28 }
+busPlatform11626 = { 'BUS_PLATFORM' : 11626, 'BUS_LINE' : 'Oc' } #Oc
+busPlatformsNum = [ busPlatform23411, busPlatform23337, busPlatform32974, busPlatform11626 ]
 
 mainThread = threading.current_thread()
 
@@ -30,10 +33,13 @@ def disableScreenblanking():
 def getNextTrips():
 
     nextTrips = []
-    busroutes = read.getBusRoutes(busPlatform23411)
-    for route in busroutes.routes:
+    for busPlatform in busPlatformsNum:
+        platformNum = busPlatform['BUS_PLATFORM']
+        busLine = busPlatform['BUS_LINE']
+        route = BusPlatform(platformNum).getBusRoute(busLine)
+        #print("{} {}".format(platformNum, busLine))
         for trip in route.trips:
-            nextTrips.append((route.routeNo, route.destination, trip.eta))
+            nextTrips.append((platformNum, route.routeNo, route.destination, trip.eta))
 
     return nextTrips
 
@@ -65,15 +71,17 @@ class GUI:
         subHeadersFrame.configure(background='black')
         subHeadersFrame.grid(row=1, sticky=tk.E + tk.W)
 
+        platformNoLbl = tk.Label(subHeadersFrame, text="Plaform", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
         busNoLbl = tk.Label(subHeadersFrame, text="Bus Number", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
         busDestLbl = tk.Label(subHeadersFrame, text="Destination", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
         minsLeftLbl = tk.Label(subHeadersFrame, text="Minutes Left", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
 
-        busNoLbl.grid(row=0, column=0)
-        busDestLbl.grid(row=0, column=1)
-        minsLeftLbl.grid(row=0, column=2)
+        platformNoLbl.grid(row=0, column=0)
+        busNoLbl.grid(row=0, column=1)
+        busDestLbl.grid(row=0, column=2)
+        minsLeftLbl.grid(row=0, column=3)
         # Expand the middle column so the other two move to the sides
-        subHeadersFrame.grid_columnconfigure(1, weight=1)
+        subHeadersFrame.grid_columnconfigure(2, weight=1)
 
         # The frame that will contain the departures
         departuresFrame = tk.Frame(master)
@@ -92,7 +100,7 @@ class GUI:
     def populateTable(self, departures):
         currentRow = 0
         for departure in departures:
-            (bus, destination, minutes) = departure
+            (platform, bus, destination, minutes) = departure
             # If a departure is too far in the future, don't display it
             if minutes > maxFutureDepartureTime:
                 continue
@@ -106,15 +114,18 @@ class GUI:
             currentRow += 1
 
             # After we have created the frame that will hold each departure, create the labels
+            platformNo = tk.Label(rowFrame, text=platform, font=("Helvetica", departureFontSize), bg=bgColor)
             busNo = tk.Label(rowFrame, text=bus, font=("Helvetica", departureFontSize), bg=bgColor)
             busDest = tk.Label(rowFrame, text=destination, font=("Helvetica", destinationFontSize), bg=bgColor)
             minsLeft = tk.Label(rowFrame, text=int(minutes) if int(minutes) != 0 else "Now", font=("Helvetica", departureFontSize), bg=bgColor)
-            busNo.grid(row=0, column=0)
-            busDest.grid(row=0, column=1)
-            minsLeft.grid(row=0, column=2)
+
+            platformNo.grid(row=0, column=0)
+            busNo.grid(row=0, column=1)
+            busDest.grid(row=0, column=2)
+            minsLeft.grid(row=0, column=3)
 
             # Expand the middle column to push the other two to the sides
-            rowFrame.grid_columnconfigure(1, weight=1)
+            rowFrame.grid_columnconfigure(2, weight=1)
             # Set the minimum size of the side columns so the middle column text is always at the same position
             rowFrame.grid_columnconfigure(0, minsize=sideColumnMinSize)
             rowFrame.grid_columnconfigure(2, minsize=sideColumnMinSize)
