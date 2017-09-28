@@ -18,8 +18,10 @@ mainThread = threading.current_thread()
 
 onPi = getpass.getuser() == "pi"
 sideColumnMinSize = 100
-departureFontSize = 35
-destinationFontSize = int(departureFontSize / 2) if onPi else departureFontSize
+departureFontSize = 40
+departureFontSize1 = 60
+departureFontSize2 = 35
+destinationFontSize = int(departureFontSize1 / 2) if onPi else departureFontSize2
 headerFontSize = 25
 subHeaderFontSize = 25
 
