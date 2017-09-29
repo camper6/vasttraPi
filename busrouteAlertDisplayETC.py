@@ -39,10 +39,13 @@ def getNextTrips():
     for busPlatform in busPlatformsNum:
         platformNum = busPlatform['BUS_PLATFORM']
         busLine = busPlatform['BUS_LINE']
-        route = BusPlatform(platformNum).getBusRoute(busLine)
-        #print("{} {}".format(platformNum, busLine))
-        for trip in route.trips:
-            nextTrips.append((platformNum, route.routeNo, route.destination, trip.eta))
+        try:
+            route = BusPlatform(platformNum).getBusRoute(busLine)
+            #print("{} {}".format(platformNum, busLine))
+            for trip in route.trips:
+                nextTrips.append((platformNum, route.routeNo, route.destination, trip.eta))
+        except Exception as e:
+            print("Failed to get bus route")        
 
     return nextTrips
 
@@ -77,7 +80,7 @@ class GUI:
         subHeadersFrame.grid(row=1, sticky=tk.E + tk.W)
 
         platformNoLbl = tk.Label(subHeadersFrame, text="{}Platform".format(" "*4), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
-        busNoLbl = tk.Label(subHeadersFrame, text="{} Bus No.".format(" "*5), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
+        busNoLbl = tk.Label(subHeadersFrame, text="{} Bus No.".format(" "*7), font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
         busDestLbl = tk.Label(subHeadersFrame, text="Destination", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
         minsLeftLbl = tk.Label(subHeadersFrame, text="Minutes Left ", font=("Helvetica", subHeaderFontSize), bg="black", fg="white")
 
