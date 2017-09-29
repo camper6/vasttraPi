@@ -107,7 +107,6 @@ class GUI:
                 clock["text"] = s
             clock.after(200, tick)
         tick()
-        
 
     # Receives a list of tuples (busline, minutesToLeave) as the argument and displays them
     def populateTable(self, departures):
@@ -157,7 +156,7 @@ def updateGui(gui):
     # Get the next trips from ECAN's public API for the station we are interested in
     nextTrips = getNextTrips()  # Contains a list of tuples (bus, minutesToDepart)
     # Sort the trips based on departure time (i.e. the third element in the tuples)
-    nextTrips.sort(key=lambda trips: trips[2])
+    nextTrips.sort(key=lambda trips: trips[3])
     # Update the displayed departures if they are different to the ones currently displayed
     if nextTrips != gui.currentlyDisplayedDepartures:
         gui.resetDepartures()  # Remove any already existing departures
