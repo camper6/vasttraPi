@@ -40,11 +40,12 @@ class BusRoute(object):
         return "{} {} {}:\n{}".format(num, name, destination, tripStr)
 
 # The class holding the other classes as a property
-class BusRoutes(object):
+class BusPlatform(object):
 
     # Initializes the class
-    def __init__(self, busroutes):
-        self.routes = busroutes # Holds a list of BusRoute
+    def __init__(self, busPlatform):
+        self.busPlatform = busPlatform
+        self.routes = ReadXMLBusRoutes().getBusRoutes(busPlatform) # Holds a list of BusRoute
 
     # Gets a specific bus route by its route number
     def getBusRoute(self, routeNo):
@@ -71,45 +72,54 @@ class ReadXMLBusRoutes(object):
     # Gets the BusPlatform URL
     def getBusPlatformURL(self, busPlatform):
         url = "http://rtt.metroinfo.org.nz/rtt/public/utility/file.aspx?ContentType=SQLXML&Name=JPRoutePositionET2&PlatformNo={}".format(busPlatform)
-        return url
+        return url # string
 
     # Gets the extracted the data from the class's url and parses it into a document
     def getBusPlatformDOM(self, url):
-        opendata = urllib.request.urlopen(url)
-        dom = minidom.parse(opendata)
-        return dom
+        try:
+            opendata = urllib.request.urlopen(url)
+        except Exception as e:
+            print ("Connection failure for ECAN %s" % url)
+        try:
+            dom = minidom.parse(opendata)
+            return dom # document
+        except Exception as e:
+            print ("Error while parsing server response")
 
     # Extracts the values in the document and returns a BusRoutes instance
     def extractBusRoutes(self, dom):
         busRoutes = []
 
-        # gets the Routes elements and its attributes
-        routes = dom.getElementsByTagName('Route')
-        for route in routes:
-            routeNo = route.getAttribute('RouteNo')
-            routeName = route.getAttribute('Name')
+        try:
+            # gets the Routes elements and its attributes
+            routes = dom.getElementsByTagName('Route')
+            for route in routes:
+                routeNo = route.getAttribute('RouteNo')
+                routeName = route.getAttribute('Name')
 
-            listofTrips = [] # reinitialize and clears the list of Trip
+                listofTrips = [] # reinitialize and clears the list of Trip
 
-            # gets the Destination elements and its attribute name
-            for destination in route.getElementsByTagName('Destination'):
-                destinationName = destination.getAttribute('Name')
+                # gets the Destination elements and its attribute name
+                for destination in route.getElementsByTagName('Destination'):
+                    destinationName = destination.getAttribute('Name')
 
-                # gets the Trip elements and its attributes
-                for trip in destination.getElementsByTagName('Trip'):
-                    eta = trip.getAttribute('ETA')
-                    tripID = trip.getAttribute('TripID')
-                    # checks if it has wheelchair access
-                    if trip.hasAttribute('WheelchairAccess'):
-                        wheelchairAccess = trip.getAttribute('WheelchairAccess') == 'true'
-                    else:
-                        wheelchairAccess = False
+                    # gets the Trip elements and its attributes
+                    for trip in destination.getElementsByTagName('Trip'):
+                        eta = trip.getAttribute('ETA')
+                        tripID = trip.getAttribute('TripID')
+                        # checks if it has wheelchair access
+                        if trip.hasAttribute('WheelchairAccess'):
+                            wheelchairAccess = trip.getAttribute('WheelchairAccess') == 'true'
+                        else:
+                            wheelchairAccess = False
 
-                    # adds an instace of Trip into the list listofTrips
-                    listofTrips.append(Trip(eta, tripID, wheelchairAccess))
+                        # adds an instace of Trip into the list listofTrips
+                        listofTrips.append(Trip(eta, tripID, wheelchairAccess))
 
-            # adds an instance of BusRoute into the list busRoutes
-            busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
+                # adds an instance of BusRoute into the list busRoutes
+                busRoutes.append(BusRoute(routeNo, routeName, destinationName, listofTrips))
+        except Exception as e:
+            print("Failed to extract bus routes")
 
         # returns an instance of the class BusRoutes holding the list
-        return BusRoutes(busRoutes)
+        return busRoutes
