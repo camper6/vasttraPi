@@ -7,6 +7,7 @@ import time
 import tkinter as tk
 import getpass
 import threading
+from playsound import playsound
 
 busPlatform53116_17 = { 'BUS_PLATFORM' : 53116, 'BUS_LINE' : 17 }
 busPlatform53116_B = { 'BUS_PLATFORM' : 53116, 'BUS_LINE' : 'B' }
@@ -29,6 +30,50 @@ subHeaderFontSize = 25
 
 maxFutureDepartureTime = 120  # The maximum amount of time (in minutes) left for a departure that is displayed
 guiRefreshRate = 15  # How often the gui checks for new departures (in seconds)
+
+# Alerts when a bus is 15 minutes away
+# Counters prevent overplay of alert
+counterP=0
+counterB=0
+counter17=0
+counter28=0
+counter80=0
+def alert(minutes,bus):
+    alertMins = 15
+    pastAlert = 14
+    global counterP
+    global counterB
+    global counter17
+    global counter28
+    global counter80
+    if minutes==alertMins and bus=="P" and counterP ==0:
+        playsound('../vasttraPi/P.mp3')
+        counterP +=1
+    elif minutes==pastAlert and bus=="P":
+        counterP=0
+        
+    if minutes==alertMins and bus=="B"and counterB ==0:
+        playsound('../vasttraPi/B.mp3')
+        counterB +=1
+    elif minutes==pastAlert and bus=="B":
+        counterB=0
+        
+    if minutes==alertMins and bus=="17"and counter17 ==0:
+        playsound('../vasttraPi/17.mp3')
+        counter17 +=1
+    elif minutes==pastAlert and bus=="17":
+        counter17=0
+        
+    if minutes==alertMins and bus=="28"and counter28 ==0:
+        playsound('../vasttraPi/28.mp3')
+        counter28 +=1
+    elif minutes==pastAlert and bus=="28":
+        counter28=0
+    if minutes==alertMins and bus=="80"and counter80 ==0:
+        playsound('../vasttraPi/80.mp3')
+        counter80 +=1
+    elif minutes==pastAlert and bus=="80":
+        counter80=0
 
 def disableScreenblanking():
     os.system("export DISPLAY=:0.0 && xset s off && xset s noblank && xset -dpms")
@@ -148,6 +193,9 @@ class GUI:
 
             # Add the newly created frame to a list so we can destroy it later when we refresh the departures
             self.departureRowFrames.append(rowFrame)
+
+            #Invoke alert() function
+            alert(minutes,bus)
 
     # Destroy any existing frames containing departures that already exist
     def resetDepartures(self):
