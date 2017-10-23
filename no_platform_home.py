@@ -7,6 +7,7 @@ import time
 import tkinter as tk
 import getpass
 import threading
+from playsound import playsound
 
 busPlatform23411 = { 'BUS_PLATFORM' : 23411, 'BUS_LINE' : 17 }
 busPlatform23337 = { 'BUS_PLATFORM' : 23337, 'BUS_LINE' : 'B' }
@@ -28,6 +29,45 @@ subHeaderFontSize = 25
 
 maxFutureDepartureTime = 120  # The maximum amount of time (in minutes) left for a departure that is displayed
 guiRefreshRate = 15  # How often the gui checks for new departures (in seconds)
+
+# Alerts when a bus is 15 minutes away
+# Counters prevent overplay of alert
+counterO=0
+counterB=0
+counter17=0
+counter28=0
+
+def alert(minutes,bus):
+    alertMins = 15
+    pastAlert = 14
+    global counterO
+    global counterB
+    global counter17
+    global counter28
+    
+    if minutes==alertMins and bus=="Oc" and counterO ==0:
+        playsound('../vasttraPi/O.mp3')
+        counterO +=1
+    elif minutes==pastAlert and bus=="Oc":
+        counterO=0
+        
+    if minutes==alertMins and bus=="B"and counterB ==0:
+        playsound('../vasttraPi/B.mp3')
+        counterB +=1
+    elif minutes==pastAlert and bus=="B":
+        counterB=0
+        
+    if minutes==alertMins and bus=="17"and counter17 ==0:
+        playsound('../vasttraPi/17.mp3')
+        counter17 +=1
+    elif minutes==pastAlert and bus=="17":
+        counter17=0
+        
+    if minutes==alertMins and bus=="28"and counter28 ==0:
+        playsound('../vasttraPi/28.mp3')
+        counter28 +=1
+    elif minutes==pastAlert and bus=="28":
+        counter28=0
 
 def disableScreenblanking():
     os.system("export DISPLAY=:0.0 && xset s off && xset s noblank && xset -dpms")
@@ -147,6 +187,9 @@ class GUI:
 
             # Add the newly created frame to a list so we can destroy it later when we refresh the departures
             self.departureRowFrames.append(rowFrame)
+
+            #Invoke alert() function
+            alert(minutes,bus)
 
     # Destroy any existing frames containing departures that already exist
     def resetDepartures(self):
